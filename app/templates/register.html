@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Регистрация - Онлайн школа</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<header>
+    <h1>Регистрация в Онлайн Школу</h1>
+    <nav>
+        <a href="/">Главная</a> |
+        <a href="/register">Регистрация</a>
+    </nav>
+</header>
+<main>
+    {% if message %}
+      <p class="message error">{{ message }}</p>
+    {% endif %}
+    <form method="post" action="/register">
+        <label for="full_name">ФИО (Фамилия Имя Отчество, отчество — опционально):</label><br/>
+        <input type="text" id="full_name" name="full_name" required placeholder="Иванов Иван Иванович" /><br/><br/>
+
+        <label for="email">Email:</label><br/>
+        <input type="email" id="email" name="email" required placeholder="example@mail.ru" /><br/><br/>
+
+        <label for="phone">Телефон:</label><br/>
+        <input type="tel" id="phone" name="phone" required placeholder="+7 999 999 99 99" /><br/><br/>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+</main>
+</body>
+</html>

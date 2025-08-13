@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Подтверждение регистрации - Онлайн школа</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<header>
+    <h1>Подтвердите ваш аккаунт</h1>
+    <nav>
+        <a href="/">Главная</a> |
+        <a href="/register">Регистрация</a>
+    </nav>
+</header>
+<main>
+    {% if message %}
+      <p class="message">{{ message }}</p>
+    {% endif %}
+    <form method="post" action="/verify">
+        <input type="hidden" name="email" value="{{ email }}" />
+        <label for="code">Введите код подтверждения:</label><br/>
+        <input type="text" id="code" name="code" required maxlength="6" minlength="6" placeholder="123456"/><br/><br/>
+        <button type="submit">Подтвердить</button>
+    </form>
+</main>
+</body>
+</html>
