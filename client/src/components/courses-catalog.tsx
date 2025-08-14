@@ -37,9 +37,8 @@ export default function CoursesCatalog() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [showAllCourses, setShowAllCourses] = useState(false); // Новое состояние для показа всех курсов
 
-
   const { data: courses = [], isLoading } = useQuery<Course[]>({
-    queryKey: ['http://127.0.0.1:8000/courses/'],
+    queryKey: ['http://localhost:8000/api/courses'],
   });
 
     const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
