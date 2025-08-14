@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Search, Clock, BookOpen, Users } from "lucide-react";
 import ApplicationModal from "@/components/application-modal";
 import type { Course } from "@shared/schema";
@@ -40,7 +39,7 @@ export default function CoursesCatalog() {
 
 
   const { data: courses = [], isLoading } = useQuery<Course[]>({
-    queryKey: ['/api/courses'],
+    queryKey: ['http://127.0.0.1:8000/courses/'],
   });
 
     const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
