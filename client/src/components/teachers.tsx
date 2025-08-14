@@ -132,7 +132,7 @@ const accordionData: AccordionItem[] = [
 
 export default function Teachers() {
   const { data: teachers = [], isLoading } = useQuery<Teacher[]>({
-    queryKey: ['/api/teachers'],
+    queryKey: ['http://localhost:8000/api/teachers'],
   });
 
   if (isLoading) {

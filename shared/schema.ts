@@ -19,9 +19,9 @@ export const courses = pgTable("courses", {
   lessons: integer("lessons").notNull(),
   grades: text("grades").notNull(),
   features: text("features").array().notNull(),
-  originalPrice: integer("original_price").notNull(),
-  currentPrice: integer("current_price").notNull(),
-  isPopular: boolean("is_popular").default(false),
+  original_price: integer("original_price").notNull(),
+  current_price: integer("current_price").notNull(),
+  is_popular: boolean("is_popular").default(false),
 });
 
 export const teachers = pgTable("teachers", {
