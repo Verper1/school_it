@@ -28,6 +28,9 @@ class MemStorage:
             teachers_raw = json.load(f)
         self.teachers = [Teacher.model_validate(t) for t in teachers_raw]
 
+    async def getCoursesDict(self) -> List[dict]:
+        return [c.model_dump() for c in self.courses]
+
     async def getUser(self, user_id: str) -> Optional[User]:
         # user_id приходит как строка, конвертируем для ключа
         try:
@@ -92,8 +95,8 @@ class MemStorage:
         self.teachers.append(teacher)
         return teacher
 
-    async def getTeachers(self) -> List[Teacher]:
-        return self.teachers
+    async def getTeachersDict(self) -> List[dict]:
+        return [teacher.model_dump() for teacher in self.teachers]
 
     async def createApplication(self, insert_application: dict) -> Application:
         user_id = insert_application.get('user_id')

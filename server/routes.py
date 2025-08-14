@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List
 from uuid import UUID
 
-from server.models import InsertContactForm
+from server.models import InsertContactForm, Course
 from server.storage import storage
 
 router = APIRouter()
@@ -33,21 +33,23 @@ async def get_user(user_id: UUID):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router.get("/users/", response_model=List[dict])
+@router.get("/users", response_model=List[dict])
 async def list_users():
     return list(storage.users.values())
 
 # Курсы
-@router.get("/courses/", response_model=List[dict])
+@router.get("/api/courses", response_model=List[Course])
 async def get_courses():
-    return await storage.getCourses()
+    courses = await storage.getCoursesDict()
+    return courses
 
-@router.get("/courses/{course_id}", response_model=dict)
+@router.get("/api/courses/{course_id}", response_model=dict)
 async def get_course(course_id: UUID):
     course = await storage.getCourse(str(course_id))
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
-    return course
+    return course.model_dump()
+
 
 @router.get("/courses/category/{category}", response_model=List[dict])
 async def get_courses_by_category(category: str):
@@ -58,14 +60,14 @@ async def get_courses_by_subject(subject: str):
     return await storage.getCoursesBySubject(subject)
 
 # Учителя
-@router.get("/teachers", response_model=List[dict])
+@router.get("/api/teachers", response_model=List[dict])
 async def get_teachers():
-    return await storage.getTeachers()
+    return await storage.getTeachersDict()
 
-@router.get("/teachers/{teacher_id}", response_model=dict)
+@router.get("/api/teachers/{teacher_id}", response_model=dict)
 async def get_teacher(teacher_id: UUID):
-    teachers = await storage.getTeachers()
-    t = next((t for t in teachers if t.id == teacher_id), None)
+    teachers = await storage.getTeachersDict()
+    t = next((t for t in teachers if t['id'] == str(teacher_id)), None)
     if not t:
         raise HTTPException(status_code=404, detail="Teacher not found")
     return t
