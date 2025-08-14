@@ -2,7 +2,9 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 from typing import List
 from uuid import UUID
-from storage import storage
+
+from server.models import InsertContactForm
+from server.storage import storage
 
 router = APIRouter()
 
@@ -92,3 +94,8 @@ async def get_application(application_id: UUID):
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
     return app
+
+@router.post("/contact_form/", response_model=dict, status_code=201)
+async def create_contact_form(form_data: InsertContactForm):
+    new_form = await storage.createContactForm(form_data)
+    return new_form

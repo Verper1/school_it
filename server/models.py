@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
+
 
 class User(BaseModel):
     id: UUID
@@ -47,3 +48,14 @@ class Application(BaseModel):
     user_id: UUID
     course_id: UUID
     created_at: datetime
+
+class InsertContactForm(BaseModel):
+    full_name: str
+    phone: str
+    email: EmailStr
+
+class ContactForm(BaseModel):
+    id: UUID
+    full_name: str
+    phone: str
+    email: EmailStr

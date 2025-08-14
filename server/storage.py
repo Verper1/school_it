@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from datetime import datetime, timezone
 import json
 from pathlib import Path
-from models import User, InsertUser, Teacher, Course, Application
+from server.models import User, InsertUser, Teacher, Course, Application, ContactForm, InsertContactForm
 
 DATA_DIR = Path(__file__).parent
 COURSES_FILE = DATA_DIR / "courses.json"
@@ -16,6 +16,7 @@ class MemStorage:
         self.applications: Dict[UUID, Application] = {}
         self.courses: List[Course] = []
         self.teachers: List[Teacher] = []
+        self.contact_forms: Dict[UUID, ContactForm] = {}
         self._load_data()
 
     def _load_data(self):
@@ -118,5 +119,16 @@ class MemStorage:
         except:
             return None
         return self.applications.get(aid)
+
+    async def createContactForm(self, form_data: InsertContactForm) -> ContactForm:
+        form_id = uuid4()
+        form_obj = ContactForm(
+            id=form_id,
+            full_name=form_data.full_name,
+            phone=form_data.phone,
+            email=form_data.email
+        )
+        self.contact_forms[form_id] = form_obj
+        return form_obj
 
 storage = MemStorage()
