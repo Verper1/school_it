@@ -1,1 +1,1 @@
-# school_it
+Frontend онлайн школы S2S
