@@ -1,103 +1,97 @@
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
 from typing import List
 from uuid import UUID
 
-from server.models import InsertContactForm, Course
+from server.shemas import (
+    InsertUser, User,
+    Course,
+    InsertApplication, Application,
+    Teacher,
+    InsertContactForm, ContactForm,
+)
 from server.storage import storage
 
 router = APIRouter()
 
-class InsertApplicationSchema(BaseModel):
-    user_id: UUID
-    course_id: UUID
-
-# Работа с пользователями
-@router.post("/users/", response_model=dict)
-async def create_user(user: dict):
-    # Валидацию и типизацию лучше здесь делать с Pydantic-BaseModel,
-    # но для примера можно так:
-    insert_user = user
-    # Проверяем уникальность username
-    all_users = storage.users.values()
-    if any(u.username == insert_user.get("username") for u in all_users):
+# Пользователи
+@router.post("/api/users", response_model=User)
+async def create_user(user: InsertUser):
+    existing = await storage.getUserByUsername(user.username)
+    if existing:
         raise HTTPException(status_code=400, detail="Username already taken")
-
-    new_user = await storage.createUser(insert_user)
+    new_user = await storage.createUser(user)
     return new_user
 
-@router.get("/users/{user_id}", response_model=dict)
+@router.get("/api/users/{user_id}", response_model=User)
 async def get_user(user_id: UUID):
     user = await storage.getUser(str(user_id))
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router.get("/users", response_model=List[dict])
+@router.get("/api/users", response_model=List[User])
 async def list_users():
     return list(storage.users.values())
 
 # Курсы
 @router.get("/api/courses", response_model=List[Course])
 async def get_courses():
-    courses = await storage.getCoursesDict()
-    return courses
+    return await storage.getCourses()
 
-@router.get("/api/courses/{course_id}", response_model=dict)
+@router.get("/api/courses/{course_id}", response_model=Course)
 async def get_course(course_id: UUID):
     course = await storage.getCourse(str(course_id))
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
-    return course.model_dump()
+    return course
 
-
-@router.get("/courses/category/{category}", response_model=List[dict])
+@router.get("/api/courses/category/{category}", response_model=List[Course])
 async def get_courses_by_category(category: str):
     return await storage.getCoursesByCategory(category)
 
-@router.get("/courses/subject/{subject}", response_model=List[dict])
+@router.get("/api/courses/subject/{subject}", response_model=List[Course])
 async def get_courses_by_subject(subject: str):
     return await storage.getCoursesBySubject(subject)
 
 # Учителя
-@router.get("/api/teachers", response_model=List[dict])
+@router.get("/api/teachers", response_model=List[Teacher])
 async def get_teachers():
-    return await storage.getTeachersDict()
+    return await storage.getTeachers()
 
-@router.get("/api/teachers/{teacher_id}", response_model=dict)
+@router.get("/api/teachers/{teacher_id}", response_model=Teacher)
 async def get_teacher(teacher_id: UUID):
-    teachers = await storage.getTeachersDict()
-    t = next((t for t in teachers if t['id'] == str(teacher_id)), None)
-    if not t:
+    teacher = await storage.getTeacher(str(teacher_id))
+    if not teacher:
         raise HTTPException(status_code=404, detail="Teacher not found")
-    return t
+    return teacher
 
 # Заявки
-@router.post("/applications/", response_model=dict, status_code=status.HTTP_201_CREATED)
-async def create_application(application_data: InsertApplicationSchema):
-    user = await storage.getUser(str(application_data.user_id))
+@router.post("/api/applications", response_model=Application, status_code=status.HTTP_201_CREATED)
+async def create_application(application: InsertApplication):
+    user = await storage.getUser(str(application.user_id))
     if not user:
         raise HTTPException(status_code=400, detail="User does not exist")
 
-    course = await storage.getCourse(str(application_data.course_id))
+    course = await storage.getCourse(str(application.course_id))
     if not course:
         raise HTTPException(status_code=400, detail="Course does not exist")
 
-    new_app = await storage.createApplication(application_data.model_dump())
+    new_app = await storage.createApplication(application)
     return new_app
 
-@router.get("/applications/", response_model=List[dict])
+@router.get("/api/applications", response_model=List[Application])
 async def get_applications():
     return await storage.getApplications()
 
-@router.get("/applications/{application_id}", response_model=dict)
+@router.get("/api/applications/{application_id}", response_model=Application)
 async def get_application(application_id: UUID):
     app = await storage.getApplication(str(application_id))
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
     return app
 
-@router.post("/contact_form", response_model=dict, status_code=201)
+# Контактная форма
+@router.post("/api/contact_form", response_model=ContactForm, status_code=status.HTTP_201_CREATED)
 async def create_contact_form(form_data: InsertContactForm):
     new_form = await storage.createContactForm(form_data)
     return new_form
