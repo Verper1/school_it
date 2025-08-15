@@ -1,12 +1,10 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { insertApplicationSchema } from "@shared/schema";
-import { z } from "zod";
+import type {Express} from "express";
+import {createServer, type Server} from "http";
+import {storage} from "./storage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all courses
-  app.get("/api/courses", async (req, res) => {
+  /* app.get("/api/courses", async (req, res) => {
     try {
       const courses = await storage.getCourses();
       res.json(courses);
@@ -65,8 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error creating application:", error);
       res.status(500).json({ message: "Failed to create application" });
     }
-  });
+  }); */
 
-  const httpServer = createServer(app);
-  return httpServer;
+  return createServer(app);
 }

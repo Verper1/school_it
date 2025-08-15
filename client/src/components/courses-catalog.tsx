@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Search, Clock, BookOpen, Users } from "lucide-react";
 import ApplicationModal from "@/components/application-modal";
 import type { Course } from "@shared/schema";
@@ -38,9 +37,8 @@ export default function CoursesCatalog() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [showAllCourses, setShowAllCourses] = useState(false); // Новое состояние для показа всех курсов
 
-
   const { data: courses = [], isLoading } = useQuery<Course[]>({
-    queryKey: ['/api/courses'],
+    queryKey: ['http://localhost:8000/api/courses'],
   });
 
     const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
@@ -257,11 +255,11 @@ export default function CoursesCatalog() {
                               <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
                                   <div className="bg-[#F9F9F9] rounded-lg p-2 flex flex-col items-center w-full">
                                       <span className="text-[#878787] text-sm mb-2">помесячно</span>
-                                      <h2 className="text-xl font-display font-normal">от {course.currentPrice.toLocaleString()} Р</h2>
+                                      <h2 className="text-xl font-display font-normal">от {course.current_price.toLocaleString()} Р</h2>
                                   </div>
                                   <div className="bg-[#EFF6FF] w-full border border-[#B9DCFF] rounded-lg p-2 flex flex-col items-center">
                                       <span className="text-[#878787] text-sm mb-2">полностью</span>
-                                      <h2 className="text-xl font-display font-normal">от {course.originalPrice.toLocaleString()} Р</h2>
+                                      <h2 className="text-xl font-display font-normal">от {course.original_price.toLocaleString()} Р</h2>
                                   </div>
                               </div>
 

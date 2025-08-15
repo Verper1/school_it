@@ -90,8 +90,12 @@ async def get_application(application_id: UUID):
         raise HTTPException(status_code=404, detail="Application not found")
     return app
 
+<<<<<<< HEAD
 # Контактная форма
 @router.post("/api/contact_form", response_model=ContactForm, status_code=status.HTTP_201_CREATED)
+=======
+@router.post("/api/contact_form", response_model=dict, status_code=201)
+>>>>>>> 05c16ee31deae608441c873a0347299d549c9407
 async def create_contact_form(form_data: InsertContactForm):
     new_form = await storage.createContactForm(form_data)
     return new_form
