@@ -6,3 +6,4 @@ vite.config.ts.*
 *.tar.gz
 .idea/
 .server/__pycache__/
+.server/__pycache__
