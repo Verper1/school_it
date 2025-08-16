@@ -7,3 +7,4 @@ vite.config.ts.*
 .idea/
 .server/__pycache__/
 server/__pycache__/
+.env
