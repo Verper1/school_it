@@ -1,6 +1,6 @@
 from fastapi_mail import FastMail, MessageSchema
 from server.mail_config import conf
-from server.shemas import InsertContactForm
+from server.schemas import InsertContactForm
 
 
 async def send_contact_form_email(form_data: InsertContactForm):

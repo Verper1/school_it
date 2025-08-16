@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 
-from server.shemas import (
+from server.schemas import (
     User, InsertUser,
     Teacher, Course,
     Application, InsertApplication,

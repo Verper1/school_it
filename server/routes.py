@@ -1,9 +1,13 @@
-from fastapi import APIRouter, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, HTTPException, status, BackgroundTasks, Depends
 from typing import List
 from uuid import UUID
 
+from sqlalchemy.orm import Session
+
+from server.crud import create_contact_form
+from server.database import get_db
 from server.email_utils import send_contact_form_email
-from server.shemas import (
+from server.schemas import (
     InsertUser, User,
     Course,
     InsertApplication, Application,
@@ -11,6 +15,7 @@ from server.shemas import (
     InsertContactForm, ContactForm,
 )
 from server.storage import storage
+
 
 router = APIRouter()
 
@@ -92,9 +97,21 @@ async def get_application(application_id: UUID):
     return app
 
 # Контактная форма
-@router.post("/contact_form", response_model=ContactForm, status_code=201)
-async def create_contact_form(form_data: InsertContactForm, background_tasks: BackgroundTasks):
-    new_form = await storage.createContactForm(form_data)
-    # Запускаем отправку письма в фоне
+@router.post("/contact_form/", response_model=ContactForm, status_code=status.HTTP_201_CREATED)
+async def create_contact_form_endpoint(
+    form_data: InsertContactForm,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    try:
+        contact_record = create_contact_form(db, form_data)
+    except Exception as e:
+        # Логируем ошибку подключения/записи, но не даём падать приложению
+        print(f"Ошибка при сохранении контактной формы в БД: {e}")
+        # Можем вернуть минимальный ответ или ошибку, но сайт продолжит работу
+        raise HTTPException(status_code=500, detail="Ошибка сервера при сохранении данных")
+
+    # Отправка письма в фоне с обработкой ошибок внутри самой фоновой задачи
     background_tasks.add_task(send_contact_form_email, form_data)
-    return new_form
+
+    return contact_record

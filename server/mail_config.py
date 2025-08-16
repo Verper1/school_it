@@ -1,5 +1,5 @@
 from fastapi_mail import ConnectionConfig
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class MailSettings(BaseSettings):
@@ -11,8 +11,7 @@ class MailSettings(BaseSettings):
     MAIL_STARTTLS: bool = False
     MAIL_SSL_TLS: bool = True
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 mail_settings = MailSettings()
 
