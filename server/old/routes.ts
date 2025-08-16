@@ -1,7 +1,27 @@
+/**
+ * Старые Express.js маршруты для Backend онлайн школы S2S.
+ * 
+ * Этот файл содержит закомментированные маршруты Express.js,
+ * которые были заменены на FastAPI endpoints. В текущей версии
+ * используется только для создания HTTP сервера.
+ * 
+ * @deprecated Все API маршруты перенесены в FastAPI (server/routes.py)
+ */
+
 import type {Express} from "express";
 import {createServer, type Server} from "http";
 import {storage} from "./storage";
 
+/**
+ * Регистрирует маршруты в Express приложении.
+ * 
+ * В текущей версии все API маршруты закомментированы,
+ * так как они перенесены в FastAPI. Функция используется
+ * только для создания HTTP сервера.
+ * 
+ * @param app - Express приложение
+ * @returns Promise<Server> - HTTP сервер
+ */
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all courses
   /* app.get("/api/courses", async (req, res) => {

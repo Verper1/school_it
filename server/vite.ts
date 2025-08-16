@@ -1,3 +1,10 @@
+/**
+ * Vite конфигурация для Backend онлайн школы S2S.
+ * 
+ * Этот файл содержит функции для настройки Vite в режиме разработки
+ * и раздачи статических файлов в продакшене.
+ */
+
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
@@ -6,8 +13,15 @@ import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
 
+// Создаем логгер для Vite
 const viteLogger = createLogger();
 
+/**
+ * Функция для логирования сообщений с временными метками.
+ * 
+ * @param message - Сообщение для логирования
+ * @param source - Источник сообщения (по умолчанию "express")
+ */
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -19,6 +33,15 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+/**
+ * Настраивает Vite для режима разработки.
+ * 
+ * Создает Vite сервер в middleware режиме и интегрирует его с Express.
+ * Обеспечивает горячую перезагрузку и трансформацию HTML.
+ * 
+ * @param app - Express приложение
+ * @param server - HTTP сервер
+ */
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
     middlewareMode: true,
@@ -26,6 +49,7 @@ export async function setupVite(app: Express, server: Server) {
     allowedHosts: true as const,
   };
 
+  // Создаем Vite сервер с настройками
   const vite = await createViteServer({
     ...viteConfig,
     configFile: false,
@@ -40,7 +64,10 @@ export async function setupVite(app: Express, server: Server) {
     appType: "custom",
   });
 
+  // Подключаем Vite middleware к Express
   app.use(vite.middlewares);
+  
+  // Catch-all маршрут для SPA (Single Page Application)
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
 
@@ -52,12 +79,14 @@ export async function setupVite(app: Express, server: Server) {
         "index.html",
       );
 
-      // always reload the index.html file from disk incase it changes
+      // Всегда перезагружаем index.html с диска на случай изменений
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
+      
+      // Трансформируем HTML через Vite
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
@@ -67,6 +96,15 @@ export async function setupVite(app: Express, server: Server) {
   });
 }
 
+/**
+ * Настраивает раздачу статических файлов для продакшена.
+ * 
+ * Раздает собранные файлы из папки public и обеспечивает
+ * fallback на index.html для SPA роутинга.
+ * 
+ * @param app - Express приложение
+ * @throws {Error} Если папка сборки не найдена
+ */
 export function serveStatic(app: Express) {
   const distPath = path.resolve(import.meta.dirname, "public");
 
@@ -76,9 +114,10 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Раздаем статические файлы из папки public
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
+  // Fallback на index.html если файл не найден (для SPA роутинга)
   app.use("*", (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
