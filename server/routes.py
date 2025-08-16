@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, BackgroundTasks
 from typing import List
 from uuid import UUID
 
+from server.email_utils import send_contact_form_email
 from server.shemas import (
     InsertUser, User,
     Course,
@@ -91,7 +92,9 @@ async def get_application(application_id: UUID):
     return app
 
 # Контактная форма
-@router.post("/api/contact_form", response_model=ContactForm, status_code=status.HTTP_201_CREATED)
-async def create_contact_form(form_data: InsertContactForm):
+@router.post("/contact_form", response_model=ContactForm, status_code=201)
+async def create_contact_form(form_data: InsertContactForm, background_tasks: BackgroundTasks):
     new_form = await storage.createContactForm(form_data)
+    # Запускаем отправку письма в фоне
+    background_tasks.add_task(send_contact_form_email, form_data)
     return new_form

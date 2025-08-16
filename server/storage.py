@@ -11,6 +11,7 @@ from server.shemas import (
     ContactForm, InsertContactForm
 )
 
+
 DATA_DIR = Path(__file__).parent
 COURSES_FILE = DATA_DIR / "courses.json"
 TEACHERS_FILE = DATA_DIR / "teachers.json"
